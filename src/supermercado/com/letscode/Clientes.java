@@ -1,7 +1,7 @@
 package supermercado.com.letscode;
 
 public enum Clientes {
-    PF(0.0),
+    PF(1.0),
     PJ(0.95),
     VIP(0.85);
 
