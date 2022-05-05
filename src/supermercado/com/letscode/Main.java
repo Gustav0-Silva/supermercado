@@ -1,8 +1,8 @@
 package supermercado.com.letscode;
 
-import org.w3c.dom.ls.LSOutput;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 public class Main {
@@ -10,9 +10,6 @@ public class Main {
     private static int linhas = 2;
     private static int colunas = 9;
     private static Object[][] dadosProdutos = new Object[linhas][colunas];
-    private static String tipoLista;
-
-    private static Tipo tipo =  null;
 
     public static void main(String[] args) {
 
@@ -34,7 +31,7 @@ public class Main {
                         System.out.print(dadosProdutos[i][j]+ " ");
                     }
                     System.out.println();
-                    //temporário para visualização de resultados
+                //temporário para visualização de resultados
 
                 }
             } else if (menu == 2) {
@@ -43,35 +40,60 @@ public class Main {
             } else if (menu == 3) {
                 listarTipo(sc);
             } else if (menu == 4) {
+                pesquisaIdentificador(sc);
+            }else if (menu == 5) {
+                pesquisaNome(sc);
+            } else if (menu == 6) {
+                //modo de vendas
+            } else if (menu == 7) {
+                //relatório de todas as vendas
+            } else if (menu == 8) {
+                //relatório de vendas consolidado pelo cpf
+            } else if (menu == 9 ) {
                 ciclo = false;
-            }else if (menu == 0) {
-                System.out.println("Opção inválida, tente novamente");
-                System.out.println();
             }
+
 
         }
     }
 
 
     public static int lerMenu (Scanner sc){
-        int menu = 0;
+        String menu = "0";
 
+        System.out.println("-----------------------------------------------");
         System.out.println("Por favor, digite o que deseja fazer:");
         System.out.println("1 - Cadastro/Compra de produtos");
         System.out.println("2 - Imprimir estoque");
         System.out.println("3 - Listar produtos pelo tipo");
-        System.out.println("4 - Sair do Sistema");
+        System.out.println("4 - Pesquisar um produto pelo código");
+        System.out.println("5 - Pesquisar um produto pelo nome");
+        System.out.println("6 - Venda de produtos");
+        System.out.println("7 - Relatório de todas as vendas");
+        System.out.println("8 - Relatório de vendas consolidado pelo CPF");
+        System.out.println("9 - Sair do Sistema");
+        System.out.println("-----------------------------------------------");
 
-        menu = sc.nextInt();
+        menu = sc.nextLine();
 
-        if (menu == 1){
+        if (menu.equals("1")){
             return 1;
-        } else if (menu == 2) {
+        } else if (menu.equals("2")) {
             return 2;
-        } else if (menu == 3) {
+        } else if (menu.equals("3")) {
             return 3;
-        } else if (menu == 4) {
+        } else if (menu.equals("4")) {
             return 4 ;
+        }else if (menu.equals("5")){
+            return 5;
+        } else if (menu.equals("6")) {
+            return 6;
+        } else if (menu.equals("7")) {
+            return 7;
+        } else if (menu.equals("8")) {
+            return 8;
+        } else if (menu.equals("9")) {
+            return 9;
         }else {
             return 0;
         }
@@ -79,8 +101,8 @@ public class Main {
     }
 
     public static void listarTipo(Scanner sc){
-        boolean valid = false;
-        int index;
+        String index;
+        Tipo markup = null;
         int flag=0;
 
         do{
@@ -89,29 +111,37 @@ public class Main {
             System.out.println("2 - Bebidas");
             System.out.println("3 - Higiene");
             System.out.print("Tipo de produto: ");
-            index = sc.nextInt();
+            index = sc.nextLine();
 
-
-            if (index == 1 || index == 2 || index == 3){
-                valid = true;
+            if (index.equals("1")){
+                markup = Tipo.ALIMENTOS;
+            } else if (index.equals("2")) {
+                markup = Tipo.BEBIDAS;
+            } else if (index.equals("3")) {
+                markup = Tipo.HIGIENE;
             }else {
+
                 System.out.println("Por favor, digite um valor correto");
+                System.out.println();
             }
 
-        }while(valid != true);
+        }while(markup == null);
 
         for (int i = 0; i < dadosProdutos.length; i++) {
             if (dadosProdutos [i][0] == null){
                 return;
             }
-            if (((int) dadosProdutos[i][0]) == index){
+            if (((Tipo) dadosProdutos[i][0]).equals(markup)){
+                LocalDateTime dataHoraEntrada = (LocalDateTime) dadosProdutos[i][6];
+                String dataFormatada = dataHoraEntrada.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+
                 System.out.println("Código de tipo: " + dadosProdutos[i][0]);
                 System.out.println("Marca do produto: " + dadosProdutos[i][1]);
                 System.out.println("Código identificador: " + dadosProdutos[i][2]);
                 System.out.println("Nome do produto: " + dadosProdutos[i][3]);
                 System.out.println("Preço de custo: " + dadosProdutos[i][4]);
                 System.out.println("Quantidade da última compra: " + dadosProdutos[i][5]);
-                System.out.println("Data da última compra: " + dadosProdutos[i][6]);
+                System.out.printf("Data de compra: %s \n", dataFormatada);
                 System.out.println("Preço de venda: " + dadosProdutos[i][7]);
                 System.out.println("Quantidade em estoque: " + dadosProdutos[i][8]);
                 System.out.println();
@@ -138,13 +168,16 @@ public class Main {
                 return;
             }
 
+            LocalDateTime dataHoraEntrada = (LocalDateTime) dadosProdutos[i][6];
+            String dataFormatada = dataHoraEntrada.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+
             System.out.println("Código de tipo: " + dadosProdutos[i][0]);
             System.out.println("Marca do produto: " + dadosProdutos[i][1]);
             System.out.println("Código identificador: " + dadosProdutos[i][2]);
             System.out.println("Nome do produto: " + dadosProdutos[i][3]);
             System.out.println("Preço de custo: " + dadosProdutos[i][4]);
             System.out.println("Quantidade da última compra: " + dadosProdutos[i][5]);
-            System.out.println("Data da última compra: " + dadosProdutos[i][6]);
+            System.out.printf("Data de compra: %s \n", dataFormatada);
             System.out.println("Preço de venda: " + dadosProdutos[i][7]);
             System.out.println("Quantidade em estoque: " + dadosProdutos[i][8]);
             System.out.println();
@@ -154,7 +187,8 @@ public class Main {
 
     }
     public static void solicitarDados(Scanner sc){
-        int index;
+        String index;
+        Tipo markup = null;
         String marca;
         String identificador;
         String nome;
@@ -162,7 +196,6 @@ public class Main {
         int quant;
         LocalDateTime dataCompra;
         double precoFinal;
-        int estoque = 0;
         boolean valid=false;
 
         //valida se foi digitado corretamente itens pertencentes ao enum
@@ -172,23 +205,27 @@ public class Main {
             System.out.println("2 - Bebidas");
             System.out.println("3 - Higiene");
             System.out.print("Tipo de produto: ");
-            index = sc.nextInt();
+            index = sc.nextLine();
 
 
-            if (index == 1 || index == 2 || index == 3){
-                valid = true;
+            if (index.equals("1")){
+                markup = Tipo.ALIMENTOS;
+            } else if (index.equals("2")) {
+                markup = Tipo.BEBIDAS;
+            } else if (index.equals("3")) {
+                markup = Tipo.HIGIENE;
             }else {
+
                 System.out.println("Por favor, digite um valor correto");
             }
-
-        }while(valid != true);
+        }while(markup == null);
 
         valid = false;
 
         //valida se foi digitada uma marca diferente de null ou String vazia
         do{
             System.out.print("Marca: ");
-            marca = sc.next();
+            marca = sc.nextLine();
 
             if (marca.equals(null) || marca.equals(" ")){
                 System.out.println("Por favor, digite uma marca válida");
@@ -202,7 +239,7 @@ public class Main {
         //valida se foi digitado um identificador diferente de null ou String vazia
         do{
             System.out.print("Identificador: ");
-            identificador = sc.next();
+            identificador = sc.nextLine();
 
             if (identificador.equals(null) || identificador.equals(" ")){
                 System.out.println("Por favor, digite um identificador válido");
@@ -216,7 +253,7 @@ public class Main {
         //valida se foi digitado um nome diferente de null ou String vazia
         do{
             System.out.print("Nome do Produto: ");
-            nome = sc.next();
+            nome = sc.nextLine();
 
             if (nome.equals(null) || nome.equals(" ")){
                 System.out.println("Por favor, digite uma marca válida");
@@ -257,7 +294,7 @@ public class Main {
         valid = false;
 
         dataCompra = LocalDateTime.now();
-        precoFinal = calculaPrecoFinal (index, precoCusto);
+        precoFinal = Tipo.calcularVenda (markup, precoCusto);
 
         valid = matrizCheia();
 
@@ -273,7 +310,7 @@ public class Main {
             //método de aumentar estoque
             for (int i = 0; i < dadosProdutos.length; i++) {
                 if (dadosProdutos[i][2].equals(identificador)){
-                    dadosProdutos[i][0] = index;
+                    dadosProdutos[i][0] = markup;
                     dadosProdutos[i][1] = marca;
                     dadosProdutos[i][2] = identificador;
                     dadosProdutos[i][3] = nome;
@@ -290,7 +327,7 @@ public class Main {
             //método de criar novo item
             for (int i = 0; i < dadosProdutos.length; i++) {
                 if (dadosProdutos[i][0] == null){
-                    dadosProdutos[i][0] = index;
+                    dadosProdutos[i][0] = markup;
                     dadosProdutos[i][1] = marca;
                     dadosProdutos[i][2] = identificador;
                     dadosProdutos[i][3] = nome;
@@ -344,21 +381,199 @@ public class Main {
         return false;
     }
 
-    public static double calculaPrecoFinal(int index, double preco){
+    public static void pesquisaIdentificador(Scanner sc){
+        String prod;
+        String exit = "0";
 
-        if (index == 1){
-            return preco * Tipo.ALIMENTOS.getMarkup();
+            System.out.println("Por favor, digite o identificador do produto que deseja procurar: ");
+            prod = sc.nextLine();
 
-        } else if (index == 2) {
-            return preco * Tipo.BEBIDAS.getMarkup();
+            for (int i = 0; i < dadosProdutos.length; i++) {
+                if (dadosProdutos[i][2].equals(prod)){
 
-        } else if (index == 3) {
-            return preco * Tipo.HIGIENE.getMarkup();
-        }else {
-            return 0;
+                    LocalDateTime dataHoraEntrada = (LocalDateTime) dadosProdutos[i][6];
+                    String dataFormatada = dataHoraEntrada.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+
+                    System.out.println("Código de tipo: " + dadosProdutos[i][0]);
+                    System.out.println("Marca do produto: " + dadosProdutos[i][1]);
+                    System.out.println("Código identificador: " + dadosProdutos[i][2]);
+                    System.out.println("Nome do produto: " + dadosProdutos[i][3]);
+                    System.out.println("Preço de custo: " + dadosProdutos[i][4]);
+                    System.out.println("Quantidade da última compra: " + dadosProdutos[i][5]);
+                    System.out.printf("Data de compra: %s \n", dataFormatada);
+                    System.out.println("Preço de venda: " + dadosProdutos[i][7]);
+                    System.out.println("Quantidade em estoque: " + dadosProdutos[i][8]);
+                    System.out.println();
+                    do {
+                        System.out.println("Digite 1 para voltar ao menu principal: ");
+                        exit = sc.nextLine();
+                    }while (!exit.equals("1"));
+
+                    return;
+                }
+            }
+    }
+
+    public static void pesquisaNome(Scanner sc){
+
+
+        System.out.println("Por favor, digite a palavra que deseja procurar");
+        String pesquisa = sc.nextLine();
+        String pesquisaFormatada = pesquisa;
+        pesquisaFormatada.toLowerCase();
+        String exit = "0";
+
+        for (int i = 0; i < dadosProdutos.length; i++) {
+            String nomeFormatado = ((String) dadosProdutos[i][3]);
+            nomeFormatado.toLowerCase();
+
+            if (nomeFormatado.contains(pesquisaFormatada)){
+
+                LocalDateTime dataHoraEntrada = (LocalDateTime) dadosProdutos[i][6];
+                String dataFormatada = dataHoraEntrada.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+
+                System.out.println("Código de tipo: " + dadosProdutos[i][0]);
+                System.out.println("Marca do produto: " + dadosProdutos[i][1]);
+                System.out.println("Código identificador: " + dadosProdutos[i][2]);
+                System.out.println("Nome do produto: " + dadosProdutos[i][3]);
+                System.out.println("Preço de custo: " + dadosProdutos[i][4]);
+                System.out.println("Quantidade da última compra: " + dadosProdutos[i][5]);
+                System.out.printf("Data de compra: %s \n", dataFormatada);
+                System.out.println("Preço de venda: " + dadosProdutos[i][7]);
+                System.out.println("Quantidade em estoque: " + dadosProdutos[i][8]);
+                System.out.println();
+                do {
+                    System.out.println("Digite 1 para voltar ao menu principal: ");
+                    exit = sc.nextLine();
+                }while (!exit.equals("1"));
+                return;
+            }
+
         }
 
     }
 
+    public static void metodoCompra(Scanner sc){
+        String inserir;
+        boolean validar = false;
 
-}
+        System.out.println("Bem vindo a interface de compra, deseja inserir o CPF? ");
+        System.out.println("Digite 1 para sim e 0 para não: ");
+
+        do {
+            inserir = sc.nextLine();
+            if (inserir.equals("1") || inserir.equals("0")){
+               validar = true;
+            }else {
+                System.out.println("Por favor, digite um número válido");
+            }
+        }while (!validar);
+
+        String cpf =validarCPF(sc,inserir);
+
+
+    }
+
+    public static String validarCPF(Scanner sc, String inserir){
+
+        boolean isNumber = false;
+        boolean isValid = false;
+        String cpf = null;
+        do {
+
+            if(inserir.equals("1")) {
+
+                System.out.println("Por favor, digite o seu CPF: ");
+                cpf = sc.nextLine();
+                char[] cpfArray = cpf.toCharArray();
+                if (cpfArray.length <= 11 && cpfArray.length > 9) {
+                    isNumber = validaIsString(cpfArray);
+                    if (isNumber == true) {
+                        isValid = calculoCPF(cpfArray);
+                    }
+                }
+                if (!isValid) {
+                    System.out.println("CPF inválido, por favor digite novamente");
+                }
+            }
+
+            if (inserir.equals("0")) {
+                cpf = "00000000191";
+                isValid = true;
+            }
+        }while(!isValid);
+
+        return cpf;
+
+    }
+
+    public static boolean validaIsString (char [] cpfArray) {
+        for (int i = 0; i < cpfArray.length; i++) {
+            if (cpfArray[i] == '0' || cpfArray[i] == '1' || cpfArray[i] == '2' || cpfArray[i] == '3' ||
+                    cpfArray[i] == '4' || cpfArray[i] == '5' || cpfArray[i] == '6' || cpfArray[i] == '7' ||
+                    cpfArray[i] == '8' || cpfArray[i] == '9') {
+            }else {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean calculoCPF (char [] cpfArray){
+
+        int [] cpfNum = new int[cpfArray.length];
+
+        for (int i = 0; i < cpfArray.length; i++) {
+            cpfNum [i] = Integer. parseInt(String.valueOf(cpfArray[i]));
+        }
+
+        int soma = 0;
+        int primeiroDigito;
+        int segundoDigito;
+
+        soma = soma + (cpfNum[0] * 10);
+        soma = soma + (cpfNum[1] * 9);
+        soma = soma + (cpfNum[2] * 8);
+        soma = soma + (cpfNum[3] * 7);
+        soma = soma + (cpfNum[4] * 6);
+        soma = soma + (cpfNum[5] * 5);
+        soma = soma + (cpfNum[6] * 4);
+        soma = soma + (cpfNum[7] * 3);
+        soma = soma + (cpfNum[8] * 2);
+
+        primeiroDigito = (soma*10)%11;
+
+        if (primeiroDigito == 10){
+            primeiroDigito = 0;
+        }
+
+        if (primeiroDigito != cpfNum[9]){
+            return false;
+        }
+
+        soma = 0;
+
+        soma = soma + (cpfNum[0] * 11);
+        soma = soma + (cpfNum[1] * 10);
+        soma = soma + (cpfNum[2] * 9);
+        soma = soma + (cpfNum[3] * 8);
+        soma = soma + (cpfNum[4] * 7);
+        soma = soma + (cpfNum[5] * 6);
+        soma = soma + (cpfNum[6] * 5);
+        soma = soma + (cpfNum[7] * 4);
+        soma = soma + (cpfNum[8] * 3);
+        soma = soma + (cpfNum[9] * 2);
+
+        segundoDigito = (soma*10)%11;
+
+        if (segundoDigito == 10){
+            segundoDigito =0;
+        }
+
+        if (segundoDigito != cpfNum[10]){
+            return false;
+        }
+
+        return true;
+    }
+    }
